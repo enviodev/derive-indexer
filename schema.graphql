@@ -1,0 +1,137 @@
+# Derive DRV — multichain LayerZero OFT indexer schema.
+#
+# Every entity id is namespaced with chainId (or guid for cross-chain OFT rows)
+# so the same address or LayerZero message never collides across networks.
+# Amounts are raw on-chain integers (18-decimal DRV).
+
+enum OFTMessageStatus {
+  SENT
+  RECEIVED
+  ORPHAN_RECEIVE
+}
+
+# Immutable ERC-20 transfer row. id = `${chainId}-${txHash}-${logIndex}`.
+type TokenTransfer {
+  id: ID!
+  chainId: Int! @index
+  token: String! @index
+  from: String! @index
+  to: String! @index
+  value: BigInt!
+  block: BigInt!
+  timestamp: BigInt! @index
+  txHash: String!
+  logIndex: Int!
+}
+
+# Immutable approval event row. id = `${chainId}-${txHash}-${logIndex}`.
+type TokenApproval {
+  id: ID!
+  chainId: Int!
+  token: String!
+  owner: String! @index
+  spender: String! @index
+  value: BigInt!
+  block: BigInt!
+  timestamp: BigInt!
+  txHash: String!
+}
+
+# Latest allowance per (chain, token, owner, spender).
+# id = `${chainId}-${token}-${owner}-${spender}`.
+type Allowance {
+  id: ID!
+  chainId: Int!
+  token: String!
+  owner: String! @index
+  spender: String! @index
+  amount: BigInt!
+  lastUpdatedBlock: BigInt!
+}
+
+# Cross-chain LayerZero message keyed by guid (one row per guid globally).
+type OFTMessage {
+  id: ID! # guid (bytes32 hex)
+  guid: String! @index
+  status: OFTMessageStatus! @index
+  srcEid: Int @index
+  dstEid: Int @index
+  srcChainId: Int @index
+  dstChainId: Int @index
+  sender: String @index
+  recipient: String @index
+  amountSentLD: BigInt
+  amountReceivedLD: BigInt
+  sendChainId: Int
+  receiveChainId: Int
+  sendTxHash: String
+  receiveTxHash: String
+  sendLogId: String
+  receiveLogId: String
+}
+
+# Per-holder DRV balance and cumulative flow counters.
+# id = `${chainId}-${token}-${address}`.
+type TokenAccount {
+  id: ID!
+  chainId: Int!
+  token: String! @index
+  address: String! @index
+  balance: BigInt!
+  transferCount: BigInt!
+  totalMinted: BigInt!
+  totalBurned: BigInt!
+  totalOftSent: BigInt!
+  totalOftReceived: BigInt!
+  firstSeenBlock: BigInt!
+  lastActiveBlock: BigInt!
+}
+
+# Per-chain token aggregates. id = `${chainId}-${token}`.
+type TokenChain {
+  id: ID!
+  chainId: Int! @index
+  token: String! @index
+  totalSupply: BigInt! # totalMinted - totalBurned
+  totalMinted: BigInt!
+  totalBurned: BigInt!
+  transferCount: BigInt!
+  approvalCount: BigInt!
+  oftSentCount: BigInt!
+  oftReceivedCount: BigInt!
+  oftSentVolume: BigInt!
+  oftReceivedVolume: BigInt!
+  holderCount: Int!
+  firstBlock: BigInt!
+  lastBlock: BigInt!
+}
+
+# UTC daily rollup per chain. id = `${chainId}-${YYYY-MM-DD}`.
+type DailyChainStat {
+  id: ID!
+  chainId: Int! @index
+  day: String! @index
+  transferCount: BigInt!
+  transferVolume: BigInt!
+  approvalCount: BigInt!
+  oftSentCount: BigInt!
+  oftSentVolume: BigInt!
+  oftReceivedCount: BigInt!
+  oftReceivedVolume: BigInt!
+}
+
+# Singleton headline counters (id = "global").
+type ProtocolGlobal {
+  id: ID!
+  transferCount: BigInt!
+  approvalCount: BigInt!
+  oftSentCount: BigInt!
+  oftReceivedCount: BigInt!
+  oftMessageSentCount: BigInt!
+  oftMessageReceivedCount: BigInt!
+  oftOrphanReceiveCount: BigInt!
+  bridgeVolumeLD: BigInt! # Σ amountReceivedLD for RECEIVED guids (de-duplicated)
+  totalMinted: BigInt!
+  totalBurned: BigInt!
+  totalSupply: BigInt!
+}

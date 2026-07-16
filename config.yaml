@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=./node_modules/envio/evm.schema.json
+name: derive-drv-oft-indexer
+description: >-
+  Derive DRV LayerZero OFT proxy indexer across Ethereum, Optimism, Base, and
+  Arbitrum One. Indexes ERC-20 Transfer/Approval plus OFTSent/OFTReceived bridge
+  messages on every verified proxy from spec.md.
+
+# Lowercase addresses for consistent multichain ids and joins.
+address_format: lowercase
+
+field_selection:
+  transaction_fields:
+    - hash
+
+contracts:
+  - name: DRVOFT
+    events:
+      - event: "Transfer(address indexed from, address indexed to, uint256 value)"
+      - event: "Approval(address indexed owner, address indexed spender, uint256 value)"
+      - event: "OFTSent(bytes32 indexed guid, uint32 dstEid, address indexed fromAddress, uint256 amountSentLD, uint256 amountReceivedLD)"
+      - event: "OFTReceived(bytes32 indexed guid, uint32 srcEid, address indexed toAddress, uint256 amountReceivedLD)"
+
+chains:
+  - id: 1 # Ethereum
+    start_block: 21224782
+    contracts:
+      - name: DRVOFT
+        address: "0xb1d1eae60eea9525032a6dcb4c1ce336a1de71be"
+  - id: 10 # Optimism
+    start_block: 129103813
+    contracts:
+      - name: DRVOFT
+        address: "0x33800de7e817a70a694f31476313a7c572bba100"
+  - id: 8453 # Base
+    start_block: 24927613
+    contracts:
+      - name: DRVOFT
+        address: "0x9d0e8f5b25384c7310cb8c6ae32c8fbeb645d083"
+  - id: 42161 # Arbitrum One
+    start_block: 283211657
+    contracts:
+      - name: DRVOFT
+        address: "0x77b7787a09818502305c95d68a2571f090abb135"
