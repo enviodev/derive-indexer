@@ -35,7 +35,7 @@ type TokenApproval {
   block: BigInt!
   timestamp: BigInt!
   txHash: String!
-}
+} 
 
 # Latest allowance per (chain, token, owner, spender).
 # id = `${chainId}-${token}-${owner}-${spender}`.
