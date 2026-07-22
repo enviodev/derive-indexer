@@ -11,7 +11,7 @@ import {
   lc,
   transferId,
 } from "./shared";
-
+ 
 function emptyOftMessage(guid: string): OFTMessage {
   return {
     id: guid,
