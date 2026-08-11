@@ -13,7 +13,6 @@ enum OFTMessageStatus {
 # Immutable ERC-20 transfer row. id = `${chainId}-${txHash}-${logIndex}`.
 type TokenTransfer {
   id: ID!
-  chainId: Int! @index
   token: String! @index
   from: String! @index
   to: String! @index
@@ -27,7 +26,6 @@ type TokenTransfer {
 # Immutable approval event row. id = `${chainId}-${txHash}-${logIndex}`.
 type TokenApproval {
   id: ID!
-  chainId: Int!
   token: String!
   owner: String! @index
   spender: String! @index
@@ -41,7 +39,6 @@ type TokenApproval {
 # id = `${chainId}-${token}-${owner}-${spender}`.
 type Allowance {
   id: ID!
-  chainId: Int!
   token: String!
   owner: String! @index
   spender: String! @index
@@ -74,7 +71,6 @@ type OFTMessage {
 # id = `${chainId}-${token}-${address}`.
 type TokenAccount {
   id: ID!
-  chainId: Int!
   token: String! @index
   address: String! @index
   balance: BigInt!
@@ -90,7 +86,6 @@ type TokenAccount {
 # Per-chain token aggregates. id = `${chainId}-${token}`.
 type TokenChain {
   id: ID!
-  chainId: Int! @index
   token: String! @index
   totalSupply: BigInt! # totalMinted - totalBurned
   totalMinted: BigInt!
@@ -109,7 +104,6 @@ type TokenChain {
 # UTC daily rollup per chain. id = `${chainId}-${YYYY-MM-DD}`.
 type DailyChainStat {
   id: ID!
-  chainId: Int! @index
   day: String! @index
   transferCount: BigInt!
   transferVolume: BigInt!

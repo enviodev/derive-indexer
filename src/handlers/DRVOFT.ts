@@ -37,7 +37,6 @@ function emptyOftMessage(guid: string): OFTMessage {
 async function applyAccountTransfer(
   context: EvmOnEventContext,
   args: {
-    chainId: number;
     token: string;
     address: string;
     delta: bigint;
