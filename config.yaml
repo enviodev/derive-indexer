@@ -1,6 +1,5 @@
 # yaml-language-server: $schema=./node_modules/envio/evm.schema.json
 name: derive-drv-oft-indexer
-disable_default_cross_chain: true # recommended; default in HyperIndex v4
 description: >-
   Derive DRV LayerZero OFT proxy indexer across Ethereum, Optimism, Base, and
   Arbitrum One. Indexes ERC-20 Transfer/Approval plus OFTSent/OFTReceived bridge

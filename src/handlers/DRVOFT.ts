@@ -37,6 +37,7 @@ function emptyOftMessage(guid: string): OFTMessage {
 async function applyAccountTransfer(
   context: EvmOnEventContext,
   args: {
+    chainId: number;
     token: string;
     address: string;
     delta: bigint;
@@ -58,7 +59,6 @@ async function applyAccountTransfer(
     holderDelta = after !== 0n ? 1 : 0;
     context.TokenAccount.set({
       id,
-      chainId,
       token: lc(token),
       address: lc(address),
       balance: after,
@@ -97,7 +97,6 @@ indexer.onEvent(
 
     context.TokenTransfer.set({
       id: transferId(chainId, txHash, logIndex),
-      chainId,
       token: lc(token),
       from: lc(from),
       to: lc(to),
@@ -172,7 +171,6 @@ indexer.onEvent(
 
     context.TokenApproval.set({
       id: transferId(chainId, txHash, event.logIndex),
-      chainId,
       token: lc(token),
       owner: lc(owner),
       spender: lc(spender),
@@ -184,7 +182,6 @@ indexer.onEvent(
 
     context.Allowance.set({
       id: allowanceId(chainId, token, owner, spender),
-      chainId,
       token: lc(token),
       owner: lc(owner),
       spender: lc(spender),

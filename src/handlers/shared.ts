@@ -26,6 +26,7 @@ export function lc(address: string): string {
 }
 
 export function transferId(
+  chainId: number,
   txHash: string,
   logIndex: number,
 ): string {
@@ -33,6 +34,7 @@ export function transferId(
 }
 
 export function eventLogId(
+  chainId: number,
   block: number,
   logIndex: number,
 ): string {
@@ -40,17 +42,19 @@ export function eventLogId(
 }
 
 export function accountId(
+  chainId: number,
   token: string,
   address: string,
 ): string {
   return `${chainId}-${lc(token)}-${lc(address)}`;
 }
 
-export function tokenChainId(token: string): string {
+export function tokenChainId(chainId: number, token: string): string {
   return `${chainId}-${lc(token)}`;
 }
 
 export function allowanceId(
+  chainId: number,
   token: string,
   owner: string,
   spender: string,
@@ -62,7 +66,7 @@ export function dayId(timestampSeconds: number): string {
   return new Date(timestampSeconds * 1000).toISOString().slice(0, 10);
 }
 
-export function dailyStatId(timestampSeconds: number): string {
+export function dailyStatId(chainId: number, timestampSeconds: number): string {
   return `${chainId}-${dayId(timestampSeconds)}`;
 }
 
@@ -90,12 +94,12 @@ export async function getGlobal(
 
 export async function getTokenChain(
   context: EvmOnEventContext,
+  chainId: number,
   token: string,
   block: bigint,
 ): Promise<TokenChain> {
   return context.TokenChain.getOrCreate({
     id: tokenChainId(chainId, token),
-    chainId,
     token: lc(token),
     totalSupply: 0n,
     totalMinted: 0n,
@@ -124,6 +128,7 @@ type DailyDelta = Partial<{
 
 export async function bumpDaily(
   context: EvmOnEventContext,
+  chainId: number,
   timestampSeconds: number,
   delta: DailyDelta,
 ): Promise<void> {
@@ -131,7 +136,6 @@ export async function bumpDaily(
   const day = dayId(timestampSeconds);
   const d = await context.DailyChainStat.getOrCreate({
     id,
-    chainId,
     day,
     transferCount: 0n,
     transferVolume: 0n,
